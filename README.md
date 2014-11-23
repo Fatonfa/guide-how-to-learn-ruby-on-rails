@@ -90,7 +90,7 @@ Now that you have the basics down, you are ready for the main course: Rails! [**
 
 ### Sample Application
 
-Let's start with a super simple classifieds site called Thinklist (a Craigslist clone), where we can where we can create and view individual listings. To get it set up, do the following:
+Let's start with a super simple classifieds site called Thinklist (a Craigslist clone), where we can create and view individual listings. To get it set up, do the following:
 
 1. [Download](https://github.com/Thinkful/thinklist/archive/start.zip) and unzip the starter application code
 1. Open up your terminal
@@ -141,7 +141,7 @@ In an application using a **SQL** database (like Thinklist), each type of thing 
 
 #### Generate
 
-Use the Rails [`generate`](http://guides.rubyonrails.org/command_line.html#rails-generate) command to set up the [**migration**](http://guides.rubyonrails.org/migrations.html), which contains instructions for changes to the structure of the database. Run:
+Use the Rails [`generate`](http://guides.rubyonrails.org/command_line.html#rails-generate) command to set up the [**migration**](http://guides.rubyonrails.org/migrations.html), which contains instructions for changes to the structure of the database. This could include modifying an existing table (e.g. adding a column), or in this case, creating a new one. Run:
 
 ```bash
 $ bin/rails generate migration CreateCategories
@@ -408,7 +408,7 @@ end
 * [Code](https://github.com/Thinkful/thinklist/tree/params)
 * [Diff](https://github.com/Thinkful/thinklist/compare/select...params)
 
-This technique (and gem that handles it) is called [**strong parameters**](http://edgeguides.rubyonrails.org/action_controller_overview.html#strong-parameters). Try creating another listing with a category, and it should save successfully.
+This technique (and gem that handles it) is called [**strong parameters**](http://edgeguides.rubyonrails.org/action_controller_overview.html#strong-parameters). `params` are the full list of values that the form has sent, and the `require()` and `permit()` filter that list to only the ones that should be allowed through to the controller's `create` action. Try creating another listing with a category, and it should save successfully.
 
 To more easily see that the category was successfully assigned, let's display it on the listing page:
 

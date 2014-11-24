@@ -90,7 +90,7 @@ Now that you have the basics down, you are ready for the main course: Rails! [**
 
 ### Sample Application
 
-Let's start with a super simple classifieds site called Thinklist (a Craigslist clone), where we can where we can create and view individual listings. To get it set up, do the following:
+Let's start with a super simple classifieds site called Thinklist (a Craigslist clone), where we can create and view individual listings. To get it set up, do the following:
 
 1. [Download](https://github.com/Thinkful/thinklist/archive/start.zip) and unzip the starter application code
 1. Open up your terminal
@@ -141,7 +141,7 @@ In an application using a **SQL** database (like Thinklist), each type of thing 
 
 #### Generate
 
-Use the Rails [`generate`](http://guides.rubyonrails.org/command_line.html#rails-generate) command to set up the [**migration**](http://guides.rubyonrails.org/migrations.html), which contains instructions for changes to the structure of the database. Run:
+Use the Rails [`generate`](http://guides.rubyonrails.org/command_line.html#rails-generate) command to set up the [**migration**](http://guides.rubyonrails.org/migrations.html), which contains instructions for changes to the structure of the database. This could include modifying an existing table (e.g. adding a column), or in this case, creating a new one. Run:
 
 ```bash
 $ bin/rails generate migration CreateCategories
@@ -155,7 +155,7 @@ $ bin/rails generate migration CreateCategories
 Open the newly created migration file, [`db/migrate/XXXXX_create_categories.rb`](https://github.com/Thinkful/thinklist/blob/migration-generate/db/migrate/20140911040047_create_categories.rb). Here, we will need to specify exactly what we want changed, which in this case will be adding a `categories` table, as well as a reference (a.k.a. **foreign key**) from the `listings` so they can each be assigned a category. Add this to the file:
 
 ```ruby
-# db/migrate/XXXXX_create_categories.rb
+# modify db/migrate/XXXXX_create_categories.rb
 class CreateCategories < ActiveRecord::Migration
   def change
     create_table :categories do |t|
@@ -193,7 +193,7 @@ Assuming the migration was successful, you will see the changes reflected in [`d
 Now that we have the database structure in place for categories, we need to create a corresponding model. The file and class name are the singular form of the table name (`categories`), and are **case-sensitive**.
 
 ```ruby
-# app/models/category.rb
+# create app/models/category.rb
 class Category < ActiveRecord::Base
   has_many :listings, dependent: :nullify
 end
@@ -207,7 +207,7 @@ Models in Rails are built on top of a gem called [**ActiveRecord**](http://guide
 Now let's set up the other half of the relation:
 
 ```ruby
-# app/models/listing.rb
+# modify app/models/listing.rb
 class Listing < ActiveRecord::Base
   belongs_to :category
 
@@ -263,7 +263,7 @@ We will want a way to see all of the categories, so let's add a dropdown to the 
 Replace the existing "Listings" link with:
 
 ```erb
-<!-- app/views/layouts/application.html.erb -->
+<!-- modify app/views/layouts/application.html.erb -->
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown">Categories <span class="caret"></span></a>
   <ul class="dropdown-menu" role="menu">
@@ -289,7 +289,7 @@ Bootstrap is a framework that can be used with any site to make styling pages ea
 You'll notice, however, after refreshing the page, all of the category links go to `#`... a.k.a. *nowhere*. Modify them to link to the category page:
 
 ```erb
-<!-- app/views/layouts/application.html.erb -->
+<!-- modify app/views/layouts/application.html.erb -->
 
 <!-- before -->
 <%= link_to category.name, '#' %>
@@ -308,7 +308,7 @@ We now get an error, "undefined method `category_path`". That page doesn't exist
 When you visit a Rails website, the request comes in through the **router**, which determines the URL structure of your application. Let's add a URL to view all listings in a particular category.
 
 ```ruby
-# config/routes.rb
+# add to middle of config/routes.rb
 resources :categories, only: [:show]
 ```
 
@@ -331,7 +331,7 @@ When you click on an individual category, however, you will get an "uninitialize
 The router determines which **controller action** to send the requests to. After the controller receives the request, it then gathers up the models it needs, and **renders** the appropriate view. Create a controller for categories:
 
 ```ruby
-# app/controllers/categories_controller.rb
+# create app/controllers/categories_controller.rb
 class CategoriesController < ApplicationController
   def show
     @category = Category.find(params[:id])
@@ -357,7 +357,7 @@ Take everything from [`app/views/listings/index.html.erb`](https://github.com/Th
 Where the list code was within our existing template, have it render the new partial instead:
 
 ```erb
-<!-- app/views/listings/index.html.erb -->
+<!-- modify app/views/listings/index.html.erb -->
 <h1>Listings</h1>
 <%= render partial: 'list', locals: { listings: @listings } %>
 ```
@@ -368,7 +368,7 @@ Where the list code was within our existing template, have it render the new par
 After verifying that [the homepage](http://localhost:3000/) still renders correctly, go ahead and add the page to view a category, which will look a lot like the `listings/index.html.erb` template above, but using the category name as the heading instead.
 
 ```erb
-<!-- app/views/categories/show.html.erb -->
+<!-- create app/views/categories/show.html.erb -->
 <h1><%= @category.name %></h1>
 <%= render partial: 'listings/list', locals: { listings: @category.listings } %>
 ```
@@ -381,7 +381,7 @@ After verifying that [the homepage](http://localhost:3000/) still renders correc
 We want the ability to assign a category to a listing. Visit [the form](http://localhost:3000/listings/new) for creating new listings. Let's use the Rails [form helpers](http://guides.rubyonrails.org/form_helpers.html) to add a dropdown/`<select>` box to the form next to the other fields for the user to choose the category:
 
 ```erb
-<!-- app/views/listings/_form.html.erb -->
+<!-- modify app/views/listings/_form.html.erb -->
 
 <div class="form-group">
   <%= f.label :category %>
@@ -399,7 +399,7 @@ Refresh the page, and you should see the new field present.
 Select a category and create a new listing. Did you get an "unpermitted parameters" error? This is because, for [security reasons](http://weblog.rubyonrails.org/2012/3/21/strong-parameters/), Rails requires us to explicitly tell it what fields should be coming in from the form. Let's add `:category_id` to the list of accepted **parameters**:
 
 ```ruby
-# bottom of app/controllers/listings_controller.rb
+# modify at bottom of app/controllers/listings_controller.rb
 def listing_params
   params.require(:listing).permit(:title, :description, :price, :category_id)
 end
@@ -408,14 +408,14 @@ end
 * [Code](https://github.com/Thinkful/thinklist/tree/params)
 * [Diff](https://github.com/Thinkful/thinklist/compare/select...params)
 
-This technique (and gem that handles it) is called [**strong parameters**](http://edgeguides.rubyonrails.org/action_controller_overview.html#strong-parameters). Try creating another listing with a category, and it should save successfully.
+This technique (and gem that handles it) is called [**strong parameters**](http://edgeguides.rubyonrails.org/action_controller_overview.html#strong-parameters). `params` are the full list of values that the form has sent, and the `require()` and `permit()` filter that list to only the ones that should be allowed through to the controller's `create` action. Try creating another listing with a category, and it should save successfully.
 
 To more easily see that the category was successfully assigned, let's display it on the listing page:
 
 ![displaying category on listing](assets/show-category.png)
 
 ```erb
-<!-- app/views/listings/show.html.erb -->
+<!-- add to app/views/listings/show.html.erb -->
 
 <p>
   <strong>Category:</strong>
